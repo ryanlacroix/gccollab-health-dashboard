@@ -82,7 +82,8 @@ def calculate_health(dataframe, monthly_average):
     It's merely the sum across all content types on that day, divided by the
     thirty day rolling average (calculated by resample_and_recalculate())
     """
-
+    # Sums the last row (latest date) of the dataframe, and divides by the monthly
+    # average (as calculated by resample_and_recalculate())
     health = dataframe.ix[-1,:].sum() / monthly_average * 100
 
     if health > 100:

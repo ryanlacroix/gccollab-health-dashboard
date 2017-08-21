@@ -1,10 +1,9 @@
 require 'rubygems'
 require 'daru'
 
-SCHEDULER.every '1m', :first_in => 0 do |job|
+SCHEDULER.every '1h', :first_in => 0 do |job|
   # Run the python script, wait for finish and do necessary manipulations
-  # `python do_the_thing()`
-  df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/Sample_Dashboard_Data.csv')
+  df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')
   labels = df.last(30)['time_created'].to_a
 
   date_list = []
@@ -36,26 +35,14 @@ SCHEDULER.every '1m', :first_in => 0 do |job|
 
   data = [
     {
-      label: 'Missions accepted',
-      data: df.last(30)['mission_accepted'].to_a,
+      label: 'Likes',
+      data: df.last(30)['likes'].to_a,
       backgroundColor: [ 'rgba(255, 99, 132, 0.2)' ] * labels.length,
       borderColor: [ 'rgba(255, 99, 132, 1)' ] * labels.length,
-      borderWidth: 1,
-    }, {
-      label: 'Missions applied',
-      data: df.last(30)['mission_applied'].to_a,
-      backgroundColor: [ 'rgba(255, 206, 86, 0.2)' ] * labels.length,
-      borderColor: [ 'rgba(255, 206, 86, 1)' ] * labels.length,
-      borderWidth: 1,
-    }, {
-      label: 'Missions applied one year ago',
-      data: df_year_ago['mission_applied'].to_a,
-      backgroundColor: [ 'rgba(114, 107, 213, 0.2)'] * df_year_ago.size,
-      borderColor: [ 'rbga(25, 15, 167)'] * df_year_ago.size,
       borderWidth: 1,
     }
   ]
   options = { }
 
-  send_event('opp', { labels: labels, datasets: data, options: options })
+  send_event('likes', { labels: labels, datasets: data, options: options })
 end

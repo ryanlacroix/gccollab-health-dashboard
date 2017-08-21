@@ -2,6 +2,7 @@
 import pandas as pd
 import code
 import numpy as np
+import os
 
 
 def call_gccollab_stats(data_type, lang, resample_val='D'):
@@ -102,10 +103,11 @@ messages = call_gccollab_stats(data_type="messages", lang="en")
 df_list = [wireposts, blogposts, comments, groupscreated, groupsjoined, likes, messages]
 
 daily_values_data_frame = merge_all_columns(df_list)
-
+daily_values_data_frame.to_csv(os.path.dirname(os.path.abspath(__file__)) + '/daily_values.csv')
 
 rolling_monthly_average = resample_and_recalculate(daily_values_data_frame, resample_val='D')
 health_statistic = calculate_health(daily_values_data_frame, rolling_monthly_average)
 
+with open(os.path.dirname(os.path.abspath(__file__)) + '/health_stat.txt', 'w') as hfile:
+    hfile.write(str(health_statistic))
 
-code.interact(local=locals())

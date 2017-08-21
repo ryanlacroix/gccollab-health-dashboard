@@ -62,7 +62,9 @@ def resample_and_recalculate(df, resample_val='D'):
     of the gather_types_by_time() function
     Resamples the dates if necessary, for the purposes of network calculations
     returns the sum across all content of the monthly average"""
-
+   
+    # Resamples if the index is a datetime index
+    # Otherwise, first creates DatetimeIndex, then resamples
     if isinstance(df.index, pd.DatetimeIndex):
         newdf = df.resample(resample_val).sum()
     else:
@@ -71,10 +73,13 @@ def resample_and_recalculate(df, resample_val='D'):
     def calculate_one_month_ago(dataframe):
         """Calculates thirty days ago"""
         return  dataframe.index.max() - pd.to_timedelta(30, unit='D')
-    
+   
+    # Select dates (given by newdf.index) greater than the date one month ago
+    # as defined by the calculate_one_month_ago() function, and apply the
+    # mean across every column
     newdf = newdf[newdf.index >= calculate_one_month_ago(newdf)].apply(np.mean, axis=0)
 
-    return newdf.sum()
+    return newdf
 
 
 def calculate_health(dataframe, monthly_average):
@@ -83,6 +88,11 @@ def calculate_health(dataframe, monthly_average):
     It's merely the sum across all content types on that day, divided by the
     thirty day rolling average (calculated by resample_and_recalculate())
     """
+    # Experimentation has been done with returning a dataframe, or a single value
+    # this will turn a dataframe into a single value.
+    if len(monthly_average) > 1:
+        monthly_average = monthly_average.sum()
+    
     # Sums the last row (latest date) of the dataframe, and divides by the monthly
     # average (as calculated by resample_and_recalculate())
     health = dataframe.ix[-1,:].sum() / monthly_average * 100
@@ -92,6 +102,26 @@ def calculate_health(dataframe, monthly_average):
 
     return health
 
+def calculate_feature_health(dataframe, monthly_average):
+    """
+    Does similar to calculate_health(), but divides the day's
+    current figures for each feature against the thirty day rolling
+    average for that feature. It's a more broad version of the
+    calculate_health() statistic.
+    """
+    feature_health = dataframe.ix[-1,:] / monthly_average * 100
+    
+    # Statement to return 100 in the case where the
+    # current value is greater than the thirty day
+    # average
+    def give_100_if_above(x):
+        if x > 100:
+            return 100
+        return x
+
+    feature_health = feature_health.apply(give_100_if_above)
+    # Exports as json for compatibility with the dashboard
+    return feature_health.to_json()
 
 wireposts = call_gccollab_stats(data_type="wireposts", lang="en")
 blogposts = call_gccollab_stats(data_type="blogposts", lang="en")
@@ -108,6 +138,7 @@ daily_values_data_frame.to_csv(os.path.dirname(os.path.abspath(__file__)) + '/da
 
 rolling_monthly_average = resample_and_recalculate(daily_values_data_frame, resample_val='D')
 health_statistic = calculate_health(daily_values_data_frame, rolling_monthly_average)
+individual_health_feature = calculate_feature_health(daily_values_data_frame, rolling_monthly_average)
 
 with open(os.path.dirname(os.path.abspath(__file__)) + '/health_stat.txt', 'w') as hfile:
     hfile.write(str(health_statistic))

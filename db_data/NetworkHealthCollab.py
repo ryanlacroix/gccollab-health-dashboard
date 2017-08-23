@@ -100,7 +100,7 @@ def calculate_health(dataframe, monthly_average):
     if health > 100:
         health = 100
 
-    return health
+    return int(health)
 
 def calculate_feature_health(dataframe, monthly_average):
     """
@@ -117,7 +117,7 @@ def calculate_feature_health(dataframe, monthly_average):
     def give_100_if_above(x):
         if x > 100:
             return 100
-        return x
+        return int(x)
 
     feature_health = feature_health.apply(give_100_if_above)
     # Exports as json for compatibility with the dashboard

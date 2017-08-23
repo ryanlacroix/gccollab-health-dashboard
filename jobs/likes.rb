@@ -23,7 +23,7 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
   df_year_ago = df.where(df['time_obj'] > year_ago1)
   df_year_ago = df_year_ago.where(df_year_ago['time_obj'] < year_ago2)
 
-  # Bring the dates forward one year to dispaly on the same graph
+  # Bring the dates forward one year to display on the same graph
   date_list = []
   df_year_ago.each_row do |vector|
     date_obj = DateTime.parse(vector['time_created'])

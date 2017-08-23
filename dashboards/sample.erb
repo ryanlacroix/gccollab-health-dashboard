@@ -1,24 +1,35 @@
 <% content_for :title do %>GCTools Health<% end %>
+<script type="text/javascript">
+$(function() {
+  Dashing.widget_base_dimensions = [220, 230]
+  Dashing.widget_margins = [5, 5]
+  Dashing.numColumns = 4
+});
+</script>
 <div class="gridster">
   <ul>
     <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
-      <div data-id="welcome" data-view="Text" data-title="Welcome to the Network Health Indicator dashboard" data-text="" data-moreinfo="This dashboard is a work in progress, stay tuned for updates!"></div>
+      <div data-id="welcome" data-view="Text" data-title="GCcollab Network Health Indicator dashboard" data-text="" data-moreinfo=""></div>
     </li>
 
     <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
       <div data-id="likes" data-view ="LineChart" data-title="Likes" data-moreinfo=""></div>
     </li>
 
-    <li data-row="1" data-col="1" data-sizex="1" data-sizey="2">
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="3">
       <div data-id="totals" data-view="List" data-unordered="true" data-title="Totals" data-moreinfo="in the last 30 days"></div>
     </li>
 
-    <li data-row="1" data-col="1" data-sizex="1" data-sizey="1">
+    <li data-row="1" data-col="1" data-sizex="1" data-sizey="2">
       <div data-id="health" data-view="Meter" data-moreinfo="of the last 30 days" data-title="Overall Health" data-min="0" data-max="100"></div>
     </li>
 
     <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
       <div data-id="blogposts" data-view ="LineChart" data-title="Blog Posts" data-moreinfo=""></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="wireposts" data-view ="LineChart" data-title="Wire Posts" data-moreinfo=""></div>
     </li>
   </ul>
   <center><div style="font-size: 12px">Treasury Board of Canada Secretariat</div></center>

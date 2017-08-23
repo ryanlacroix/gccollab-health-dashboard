@@ -4,13 +4,20 @@
   <li data-foreach-item="items">
     <span class="label" data-bind="item.label"></span>
     <span class="value" data-bind="item.value"></span>
+    <span class="labelhealth" data-bind="item.healthlabel"></span>
+    <span class="valuehealth" data-bind="item.healthvalue"></span>
   </li>
 </ol>
 
 <ul class="list-nostyle">
   <li data-foreach-item="items">
-    <span class="label" data-bind="item.label"></span>
-    <span class="value" data-bind="item.value"></span>
+    <div class="list-display">
+      <span class="label" data-bind="item.label"></span>
+      <span class="value" data-bind="item.value"></span>
+    </div>
+    <div class="health-display">
+      <span class="valuehealth" data-bind="item.healthvalue"></span>
+    </div>
   </li>
 </ul>
 

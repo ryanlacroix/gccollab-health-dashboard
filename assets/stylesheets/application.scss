@@ -32,6 +32,11 @@ $text-danger-color: #fff;
   -ms-animation:      $animation-name $duration $function #{$animation-iteration-count};
 }
 
+@media screen and (max-width:768px) {
+  .gridster, .gridster ul { width:100% !important ; position:static !important }
+  .gridster ul li { width:100% !important ; position:relative !important ; top:0 !important ; left:0 !important ; overflow:hidden ; display:table ; min-height:400px }
+}
+
 // ----------------------------------------------------------------------------
 // Base styles
 // ----------------------------------------------------------------------------

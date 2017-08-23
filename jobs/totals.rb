@@ -1,9 +1,14 @@
 require 'rubygems'
 require 'daru'
+require 'json'
 
 SCHEDULER.every '1h', :first_in => 0 do |job|
-    # Run the python script, wait for finish and do necessary manipulations
+    # Get stats file
     df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')
+
+    # Individual health file
+    file = File.read(Dir.pwd + '/db_data/ind_health.json')
+    health_hash = JSON.parse(file)
 
     # Retrieve values from a year ago
     date_list = []
@@ -24,16 +29,22 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
     total_counts = Hash.new({ value: 0})
 
     # Get sums (last 30 days)
-    files = df.last(30)['wireposts'].sum
-    discs = df.last(30)['groupscreated'].sum
-    replies = df.last(30)['messages'].sum
-    users = df.last(30)['blogposts'].sum
-
+    wireposts = df.last(30)['wireposts'].sum
+    groups = df.last(30)['groupscreated'].sum
+    groups_j = df.last(30)['groupsjoined'].sum
+    messages = df.last(30)['messages'].sum
+    blogposts = df.last(30)['blogposts'].sum
+    likes = df.last(30)['likes'].sum
+    comments = df.last(30)['comments'].sum
+    
     # Get sums (last year, 30 days)
-    files_ly = df_month_ago['wireposts'].sum
-    discs_ly = df_month_ago['groupscreated'].sum
-    replies_ly= df_month_ago['messages'].sum
-    users_ly = df_month_ago['blogposts'].sum
+    wireposts_ly = df_month_ago['wireposts'].sum
+    groups_ly = df_month_ago['groupscreated'].sum
+    groups_j_ly = df_month_ago['groupsjoined'].sum
+    messages_ly= df_month_ago['messages'].sum
+    blogposts_ly = df_month_ago['blogposts'].sum
+    likes_ly = df_month_ago['likes'].sum
+    comments_ly = df_month_ago['comments'].sum
 
     def desc_diff(v1, v2)
         diff = (v1.to_i - v2.to_i)
@@ -44,10 +55,17 @@ SCHEDULER.every '1h', :first_in => 0 do |job|
         end
     end
 
-    total_counts['file'] = { label: 'Wire posts', value: (files.to_s + desc_diff(files, files_ly)) }
-    total_counts['disc'] = { label: 'Groups created', value: (discs.to_s + desc_diff(discs, discs_ly)) }
-    total_counts['repl'] = { label: 'Messages sent', value: (replies.to_s + desc_diff(replies, replies_ly))}
-    total_counts['user'] = { label: 'Blog posts', value: (users.to_s + desc_diff(users, users_ly))}
+    def healthify(h_value)
+        return "Health: " + h_value.to_i.to_s + "%"
+    end
+
+    total_counts['wire'] = { label: 'Wire posts', value: (wireposts.to_s + desc_diff(wireposts, wireposts_ly)), healthvalue: healthify(health_hash['wireposts']) }
+    total_counts['grpc'] = { label: 'New groups', value: (groups.to_s + desc_diff(groups, groups_ly)), healthvalue: healthify(health_hash['groupscreated']) }
+    total_counts['grpj'] = { label: 'Groups joined',value: (groups_j.to_s + desc_diff(groups_j, groups_j_ly)), healthvalue: healthify(health_hash['groupsjoined']) }
+    total_counts['repl'] = { label: 'Messages',   value: (messages.to_s + desc_diff(messages, messages_ly)), healthvalue: healthify(health_hash['messages'])}
+    total_counts['user'] = { label: 'Blog posts', value: (blogposts.to_s + desc_diff(blogposts, blogposts_ly)), healthvalue: healthify(health_hash['blogposts'])}
+    total_counts['like'] = { label: 'Likes',      value: (likes.to_s + desc_diff(likes, likes_ly)), healthvalue: healthify(health_hash['likes'])}
+    total_counts['comm'] = { label: 'Comments',   value: (comments.to_s + desc_diff(comments, comments_ly)), healthvalue: healthify(health_hash['comments'])}
 
     send_event('totals', { items: total_counts.values })
 end

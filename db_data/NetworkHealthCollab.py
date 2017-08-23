@@ -4,9 +4,9 @@ import code
 import numpy as np
 import os
 import threading
-import time
 
-t0 = time.time()
+
+
 class CollabApiThread(threading.Thread):
     """
     Class that creates threads to specifically run the call_gccollab_stats() function
@@ -218,9 +218,3 @@ with open(os.path.dirname(os.path.abspath(__file__)) + '/health_stat.txt', 'w') 
     hfile.write(str(health_statistic))
 with open(os.path.dirname(os.path.abspath(__file__)) + '/ind_health.json', 'w') as hfile:
     hfile.write(individual_health_feature)
-
-t1 = time.time()
-
-total_time = t1 - t0
-print(total_time)
-code.interact(local=locals())

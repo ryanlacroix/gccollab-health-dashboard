@@ -3,6 +3,39 @@ import pandas as pd
 import code
 import numpy as np
 import os
+import threading
+import time
+
+t0 = time.time()
+class CollabApiThread(threading.Thread):
+    """
+    Class that creates threads to specifically run the call_gccollab_stats() function
+
+    Because the program is made up of mostly api calls
+    they will be threaded to let them all run simultaneously
+    """
+    def __init__(self, data_type, lang):
+        """
+        The data_type and lang parameters will be exclusively passed
+        into the call_gccollab_stats() function
+
+        The data parameter will be updated in the run(self) method
+        """
+        threading.Thread.__init__(self)
+        self.data = None
+        self.data_type = data_type
+        self.lang = lang
+
+    def run(self):
+        """
+        run(self) is a method invoked from the threading module
+        when we run thread.start(), it will invoke whatever is in the
+        run function as its own thread
+
+        Results from the function will be stored in the self.data
+        attribute, just so it has somewhere to be
+        """
+        self.data = call_gccollab_stats(data_type=self.data_type, lang=self.lang)
 
 
 def call_gccollab_stats(data_type, lang, resample_val='D'):
@@ -123,13 +156,54 @@ def calculate_feature_health(dataframe, monthly_average):
     # Exports as json for compatibility with the dashboard
     return feature_health.to_json()
 
-wireposts = call_gccollab_stats(data_type="wireposts", lang="en")
-blogposts = call_gccollab_stats(data_type="blogposts", lang="en")
-comments = call_gccollab_stats(data_type="comments", lang="en")
-groupscreated = call_gccollab_stats(data_type="groupscreated", lang="en")
-groupsjoined = call_gccollab_stats(data_type="groupsjoined", lang="en")
-likes = call_gccollab_stats(data_type="likes", lang="en")
-messages = call_gccollab_stats(data_type="messages", lang="en")
+def run_thread_list(threads):
+    """
+    Starts each thread, and tells the program
+    to wait until each of the threads terminate
+    """
+    # Start threads
+    for thread in threads:
+        thread.start()
+    # Make sure each thread terminates
+    # before you are move on
+    for thread in threads:
+        thread.join()
+
+# Creating the threads that will be run
+# through the run_thread_list(threads) function
+
+# Since each API call will be separate, and they
+# do not interact with each other, creating their
+# own thread for each one seems like the most simple and
+# intuitive way to do this
+blog_posts_thread = CollabApiThread("blogposts", "en")
+messages_thread = CollabApiThread("messages", "en")
+comments_thread = CollabApiThread("comments", "en")
+groups_created_thread = CollabApiThread("groupscreated", "en")
+groups_joined_thread = CollabApiThread("groupsjoined", "en")
+likes_thread = CollabApiThread("likes", "en")
+wire_posts_thread = CollabApiThread("wireposts", "en")
+
+
+threads = [blog_posts_thread, messages_thread,
+           comments_thread, groups_created_thread,
+           groups_joined_thread, likes_thread,
+           wire_posts_thread]
+
+
+
+run_thread_list(threads)
+
+# Assigning the actual data into variables
+wireposts = wire_posts_thread.data
+blogposts = blog_posts_thread.data
+comments = comments_thread.data
+groupscreated = groups_created_thread.data
+groupsjoined = groups_joined_thread.data
+likes = likes_thread.data
+messages = messages_thread.data
+
+
 
 df_list = [wireposts, blogposts, comments, groupscreated, groupsjoined, likes, messages]
 
@@ -143,3 +217,8 @@ individual_health_feature = calculate_feature_health(daily_values_data_frame, ro
 with open(os.path.dirname(os.path.abspath(__file__)) + '/health_stat.txt', 'w') as hfile:
     hfile.write(str(health_statistic))
 
+t1 = time.time()
+
+total_time = t1 - t0
+print(total_time)
+code.interact(local=locals())

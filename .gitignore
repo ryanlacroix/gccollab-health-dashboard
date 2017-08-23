@@ -1,1 +1,4 @@
 history.yml
+db_data/*.csv
+db_data/*.json
+db_data/*.txt

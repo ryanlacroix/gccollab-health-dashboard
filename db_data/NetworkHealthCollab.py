@@ -142,4 +142,6 @@ individual_health_feature = calculate_feature_health(daily_values_data_frame, ro
 
 with open(os.path.dirname(os.path.abspath(__file__)) + '/health_stat.txt', 'w') as hfile:
     hfile.write(str(health_statistic))
+with open(os.path.dirname(os.path.abspath(__file__)) + '/ind_health.json', 'w') as hfile:
+    hfile.write(individual_health_feature)
 

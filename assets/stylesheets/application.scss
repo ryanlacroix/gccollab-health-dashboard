@@ -34,7 +34,7 @@ $text-danger-color: #fff;
 
 @media screen and (max-width:768px) {
   .gridster, .gridster ul { width:100% !important ; position:static !important }
-  .gridster ul li { width:100% !important ; position:relative !important ; top:0 !important ; left:0 !important ; overflow:hidden ; display:table ; min-height:400px }
+  .gridster ul li{ width:100% !important ; position:relative !important ; top:0 !important ; left:0 !important ; overflow:hidden ; display:table ; min-height: 200px}
 }
 
 // ----------------------------------------------------------------------------

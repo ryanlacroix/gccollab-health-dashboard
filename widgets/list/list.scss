@@ -57,7 +57,7 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
     color: $value-color;
   }
 
-  .valuehealth {
+  .value-health {
     font-size: 10px;
     float: right;
   }
@@ -74,4 +74,17 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
     color: $moreinfo-color;
   }
 
+}
+
+// Override default mobile widget li behaviour
+@media screen and (max-width:768px) {
+  .gridster ul li .list-li {
+    min-height: 50px;
+  }
+  .widget-list .value {
+    padding-right: 30px;
+  }
+  .widget-list .value-health {
+    padding-right: 30px;
+  }
 }

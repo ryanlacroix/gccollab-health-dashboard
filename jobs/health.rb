@@ -1,4 +1,8 @@
-SCHEDULER.every '10m', :first_in => 0 do |job|
-    health = File.open(Dir.pwd + "/db_data/health_stat.txt").first
-    send_event('health',   { value: health })
+SCHEDULER.every '10m', :first_in => '5m' do |job|
+    begin
+        health = File.open(Dir.pwd + "/db_data/health_stat.txt").first
+        send_event('health',   { value: health })
+    rescue
+        puts("Reading stats failed")
+    end
 end

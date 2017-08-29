@@ -2,7 +2,7 @@ require 'rubygems'
 require 'daru'
 require 'json'
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '10m', :first_in => 0 do |job|
     # Get stats file
     df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')
 

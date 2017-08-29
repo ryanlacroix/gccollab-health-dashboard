@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'daru'
 
-SCHEDULER.every '1h', :first_in => 0 do |job|
+SCHEDULER.every '10m', :first_in => 0 do |job|
   # Run the python script
   df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')
   labels = df.last(30)['time_created'].to_a

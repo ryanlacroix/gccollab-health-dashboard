@@ -20,9 +20,16 @@ SCHEDULER.every '10m', :first_in => '3m' do |job|
 
         newest_date1 = df.last(30)['time_obj'].to_a[0]
 
-        # date - 1 added to account for the end of month. Stops argumenterror from Date
-        month_ago1 = Date.new(newest_date1.year, newest_date1.month - 2, newest_date1.day - 1)
-        month_ago2 = Date.new(newest_date1.year, newest_date1.month - 1, newest_date1.day - 1)
+        # Fix dates issue
+        day_last_month = newest_date1.day
+        if (newest_date1.day > 30)
+            day_last_month = 30
+        elsif (newest_date1.day < 1)
+            day_last_month = 1
+        end
+
+        month_ago1 = Date.new(newest_date1.year, newest_date1.month - 2, day_last_month)
+        month_ago2 = Date.new(newest_date1.year, newest_date1.month - 1, day_last_month)
 
         # Retrieve segment of the dataframe 1 year ago
         df_month_ago = df.where(df['time_obj'] > month_ago1)

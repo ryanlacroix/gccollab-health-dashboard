@@ -1,6 +1,6 @@
 require 'json'
 
-SCHEDULER.every '10m', :first_in => '5m' do |job|
+SCHEDULER.every '10m', :first_in => '3m' do |job|
     begin
         file = File.read(Dir.pwd + '/db_data/ind_health.json')
         data_hash = JSON.parse(file)

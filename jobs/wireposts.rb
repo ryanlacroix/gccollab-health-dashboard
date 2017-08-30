@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'daru'
 
-SCHEDULER.every '10m', :first_in => '5m' do |job|
+SCHEDULER.every '10m', :first_in => '3m' do |job|
   begin
     # Run the python script, wait for finish and do necessary manipulations
     df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')

@@ -2,7 +2,7 @@ require 'rubygems'
 require 'daru'
 require 'json'
 
-SCHEDULER.every '10m', :first_in => '5m' do |job|
+SCHEDULER.every '10m', :first_in => '3m' do |job|
     begin
         # Get stats file
         df = Daru::DataFrame.from_csv(Dir.pwd + '/db_data/daily_values.csv')
@@ -20,8 +20,9 @@ SCHEDULER.every '10m', :first_in => '5m' do |job|
 
         newest_date1 = df.last(30)['time_obj'].to_a[0]
 
-        month_ago1 = Date.new(newest_date1.year, newest_date1.month - 2, newest_date1.day)
-        month_ago2 = Date.new(newest_date1.year, newest_date1.month - 1, newest_date1.day)
+        # date - 1 added to account for the end of month. Stops argumenterror from Date
+        month_ago1 = Date.new(newest_date1.year, newest_date1.month - 2, newest_date1.day - 1)
+        month_ago2 = Date.new(newest_date1.year, newest_date1.month - 1, newest_date1.day - 1)
 
         # Retrieve segment of the dataframe 1 year ago
         df_month_ago = df.where(df['time_obj'] > month_ago1)
@@ -69,7 +70,8 @@ SCHEDULER.every '10m', :first_in => '5m' do |job|
         total_counts['comm'] = { label: 'Comments',   value: (comments.to_s + desc_diff(comments, comments_ly)), healthvalue: healthify(health_hash['comments'])}
 
         send_event('totals', { items: total_counts.values })
-    rescue
+    rescue Exception => ex
         puts("Reading stats failed")
+        puts("Error message: #{ex.class}, #{ex.message}, #{ex.backtrace}")
     end
 end
